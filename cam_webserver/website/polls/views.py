@@ -6,7 +6,7 @@ from django.http import HttpResponseRedirect, Http404
 from django.urls import reverse
 from django.views import generic
 
-from .models import Question
+from .models import Question, Choice
 # Create your views here.
 
 class IndexView(generic.ListView):
@@ -19,7 +19,7 @@ class IndexView(generic.ListView):
 
 class DetailView(generic.DetailView):
     model = Question
-    template_name = 'polls/detail.html'
+    template_name = 'polls/details.html'
 
 
 class ResultsView(generic.DetailView):
@@ -30,7 +30,7 @@ class ResultsView(generic.DetailView):
 def vote(request, question_id):
     q = get_object_or_404(Question, pk=question_id)
     try:
-        selected_choice = question.choice_set.get(pk=request.POST['choice'])
+        selected_choice = q.choice_set.get(pk=request.POST['choice'])
     except (KeyError, Choice.DoesNotExist):
         return render(request, 'polls/details.html', {
             'question' : q,
