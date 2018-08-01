@@ -270,10 +270,6 @@
 		<!-- return $logSize; -->
 	<!-- } -->
 
-	<!-- function getStyle() { -->
-		<!-- return 'css/' . file_get_contents(BASE_DIR . '/css/extrastyle.txt'); -->
-	<!-- } -->
-
 	<!-- function getUserLevel($user) { -->
 		<!-- global $userLevels, $userInit; -->
 		<!-- if(strlen($user) == 0) { -->
@@ -493,28 +489,6 @@
       <!-- } -->
    <!-- } -->
 
-   <!-- function getDisplayStyle($context, $userLevel) { -->
-	    <!-- global $Simple; -->
-	    <!-- if ($Simple == 1) { -->
-			<!-- echo 'style="display:none;"'; -->
-		<!-- } else { -->
-			<!-- switch($context) { -->
-				<!-- case 'navbar': -->
-					<!-- if ($userLevel == USERLEVEL_MIN) -->
-						<!-- echo 'style="display:none;"'; -->
-					<!-- break; -->
-				<!-- case 'actions': -->
-					<!-- if ($userLevel == USERLEVEL_MIN) -->
-						<!-- echo 'style="display:none;"'; -->
-					<!-- break; -->
-				<!-- case 'settings': -->
-					<!-- if ((int)$userLevel != USERLEVEL_MAX) -->
-						<!-- echo 'style="display:none;"'; -->
-					<!-- break; -->
-			<!-- } -->
-		<!-- } -->
-   <!-- } -->
-
    <!-- $toggleButton = "Off"; -->
    <!-- $Simple = 0; -->
    <!-- $allowSimple = "SimpleOn"; -->
@@ -562,48 +536,49 @@
    <!-- $userLevel =  getUserLevel($user); -->
    <!-- writeLog("UserLevel " . $userLevel); -->
   <!-- ?> -->
-
+{% load staticfiles %}
 <html>
    <head>
       <meta name="viewport" content="width=550, initial-scale=1">
       <title>{{ CAM_STRING }}</title>
-      <link rel="stylesheet" href="{% static "Cam/css/style_minified.css" %}" />
-      <link rel="stylesheet" href="<?php echo getStyle(); ?>" />
-      <script src="js/style_minified.js"></script>
-      <script src="js/script.js"></script>
-      <script src="js/pipan.js"></script>
+      <link rel="stylesheet" href="{% static "css/style_minified.css" %}" />
+      <script src="{% static "js/style_minified.js" %}"></script>
    </head>
    <body onload="setTimeout('init({{mjpegmode}}, {{video_fps}}, {{divider}});', 100);">
-      <div class="navbar navbar-inverse navbar-fixed-top" role="navigation" <?php getdisplayStyle('navbar', $userLevel); ?>>
+       <div class="navbar navbar-inverse navbar-fixed-top" role="navigation" {{ simple }}>
          <div class="container">
             <div class="navbar-header">
                <a class="navbar-brand" href="#">{{ CAM_STRING }}</a>
             </div>
          </div>
       </div>
-	  <?php simple_button(); ?>
+      <input id="toggle_display" type="button" class="btn btn-primary" value="{{toggle_str}}" style="position:absolute;top:60px;right:10px;" onclick="set_display(this.value);">
       <div class="container-fluid text-center liveimage">
          <div><img id="mjpeg_dest" <?php echo getLoadClass() . getImgWidth();?>
 		 <?php if(file_exists("pipan_on")) echo "ontouchstart=\"pipan_start()\""; ?> onclick="toggle_fullscreen(this);" src="./loading.jpg"></div>
          <div id="main-buttons">
-            <input id="video_button" type="button" class="btn btn-primary" <?php getdisplayStyle('actions', $userLevel); ?>>
-            <input id="image_button" type="button" class="btn btn-primary" <?php getdisplayStyle('actions', $userLevel); ?>>
-            <input id="timelapse_button" type="button" class="btn btn-primary" <?php getdisplayStyle('actions', $userLevel); ?>>
-            <input id="md_button" type="button" class="btn btn-primary" <?php getdisplayStyle('settings', $userLevel); ?>>
-            <input id="halt_button" type="button" class="btn btn-danger" <?php getdisplayStyle('settings', $userLevel); ?>>
+             <input id="video_button" type="button" class="btn btn-primary" {{ simple }}>
+            <input id="image_button" type="button" class="btn btn-primary" {{ simple }}>
+            <input id="timelapse_button" type="button" class="btn btn-primary" {{ simple }}>
+            <input id="md_button" type="button" class="btn btn-primary" {{ simple }}>
+            <input id="halt_button" type="button" class="btn btn-danger" {{ simple }}>
          </div>
       </div>
       <div id="secondary-buttons" class="container-fluid text-center">
-         <?php pan_controls(); ?>
-         <?php user_buttons(); ?>
-         <a href="preview.php" class="btn btn-default" <?php getdisplayStyle('actions', $userLevel); ?>>Download Videos and Images</a>
+
+          <div class="container-fluid text-center">
+              {% for name, macro in user_buttons %}
+              <input id="{{name}}" type="button" value="{{name}}" onclick="'sy {{macro}}') class="btn btn-primary" >
+              {% endfor %}
+          </div>
+         <a href="preview.php" class="btn btn-default" {{ simple }}>Download Videos and Images</a>
          &nbsp;&nbsp;
-         <?php  if($config['motion_external'] == '1'): ?><a href="motion.php" class="btn btn-default" <?php getdisplayStyle('settings', $userLevel); ?>>Edit motion settings</a>&nbsp;&nbsp;<?php endif; ?>
-         <a href="schedule.php" class="btn btn-default" <?php getdisplayStyle('settings', $userLevel); ?>>Edit schedule settings</a>
+         <?php  if($config['motion_external'] == '1'): ?><a href="motion.php" class="btn btn-default" {{ simple }}>Edit motion settings</a>&nbsp;&nbsp;<?php endif; ?>
+         <a href="schedule.php" class="btn btn-default" {{ simple }}>Edit schedule settings</a>
       </div>
 
       <div class="container-fluid text-center">
-         <div class="panel-group" id="accordion" <?php getdisplayStyle('settings', $userLevel); ?> >
+          <div class="panel-group" id="accordion" {{ simple }} >
             <div class="panel panel-default">
                <div class="panel-heading">
                   <h2 class="panel-title">
