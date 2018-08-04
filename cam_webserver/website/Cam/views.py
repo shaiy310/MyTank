@@ -5,6 +5,7 @@ from django.shortcuts import render, get_object_or_404
 from django.http import HttpResponseRedirect, Http404
 from django.urls import reverse
 from django.views import generic
+from consts import GLOBAL_CONSTS
 
 # from .models import Question, Choice
 # Create your views here.
@@ -39,7 +40,7 @@ class IndexView(generic.ListView):
 def test(request, ):
     print '~~~~%s' % (request.GET.get('toggle_display'), )
     return render(request, 'Cam/index.html', {
-        'CAM_STRING' : 'RPi Cam Control v6.4.24 mycam@%s' % ('RaspPi', ),
+        'GLOBAL_CONSTS' : GLOBAL_CONSTS,
         'mjpegmode' : 1,
         'video_fps' : 2,
         'divider' : 1,

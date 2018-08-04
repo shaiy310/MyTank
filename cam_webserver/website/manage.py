@@ -1,13 +1,13 @@
 #!/usr/bin/env python
 import os
 import sys
-import RPi.GPIO as GPIO
+# import RPi.GPIO as GPIO
 
 if __name__ == "__main__":
-    GPIO.setmode(GPIO.BOARD)
-    GPIO.setup(40, GPIO.OUT)
-    GPIO.output(40, True)
-    GPIO.cleanup()
+    # GPIO.setmode(GPIO.BOARD)
+    # GPIO.setup(40, GPIO.OUT)
+    # GPIO.output(40, True)
+    # GPIO.cleanup()
     os.environ.setdefault("DJANGO_SETTINGS_MODULE", "website.settings")
     try:
         from django.core.management import execute_from_command_line
