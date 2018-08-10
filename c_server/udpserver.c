@@ -20,13 +20,14 @@
 int main(int argc, char **argv)
 {
 	int sockfd;		/* socket */
-	int portno;		/* port to listen on */
+	int port_num;		/* port to listen on */
 	int clientlen;		/* byte size of client's address */
 	struct sockaddr_in serveraddr;	/* server's addr */
 	struct sockaddr_in clientaddr;	/* client addr */
 	struct hostent *hostp;	/* client host info */
 	char *buf;		/* message buf */
 	char *hostaddrp;	/* dotted decimal host addr string */
+    char * prog_name;
 	int optval;		/* flag value for setsockopt */
 	int n;			/* message byte size */
     pid_t pid = -1;
@@ -34,11 +35,20 @@ int main(int argc, char **argv)
 	/*
 	 * check command line arguments
 	 */
-	if (argc != 2) {
-		fprintf(stderr, "usage: %s <port>\n", argv[0]);
-		exit(1);
-	}
-	portno = atoi(argv[1]);
+	switch(argc) {
+        case 3:
+            prog_name = argv[1];
+            port_num = atoi(argv[2]);
+            break;
+        case 2:
+            prog_name = argv[1];
+            port_num = 1337;
+            break;
+        default:
+            prog_name = "~/MyTank/controller.py";
+            port_num = 1337;
+            break;
+    }
 
 	/*
 	 * socket: create the parent socket
@@ -56,7 +66,7 @@ int main(int argc, char **argv)
 	 */
 	optval = 1;
 	setsockopt(sockfd, SOL_SOCKET, SO_REUSEADDR,
-		   (const void *)&optval, sizeof(int));
+        (const void *)&optval, sizeof(int));
 
 	/*
 	 * build the server's Internet address
@@ -65,7 +75,7 @@ int main(int argc, char **argv)
 	serveraddr.sin_family = AF_INET;
 	serveraddr.sin_addr.s_addr = htonl(INADDR_ANY);
 	//serveraddr.sin_addr.s_addr = 0x7F000001;
-	serveraddr.sin_port = htons((unsigned short)portno);
+	serveraddr.sin_port = htons((unsigned short)port_num);
 
 	/*
 	 * bind: associate the parent socket with a port
@@ -125,12 +135,12 @@ int main(int argc, char **argv)
                 break;
             case '1':
                 // run python and wait to finish
-                pid = start_process(true);
+                pid = start_process(prog_name, true);
                 printf("process ended.\n");
                 break;
             case '2':
                 // run python and continue
-                pid = start_process(false);
+                pid = start_process(prog_name, false);
                 printf("process skipped.\n");
                 break;
         }

@@ -7,7 +7,7 @@
 #include <sys/wait.h>
 #include <stdbool.h>
 
-int start_process(bool should_wait) {
+int start_process(char * prog_name, bool should_wait) {
     errno = 0;
     pid_t pid = fork();
     if (pid < 0) {
@@ -17,7 +17,7 @@ int start_process(bool should_wait) {
     } else if (pid == 0) {
         // child is here
         char * internal_argv[] = {
-            "./script.py",
+            prog_name,
             NULL
         };
         if (execvp(internal_argv[0], internal_argv) < 0) {
